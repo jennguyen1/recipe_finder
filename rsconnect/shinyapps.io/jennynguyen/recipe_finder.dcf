@@ -3,8 +3,8 @@ title: recipe_finder
 account: jennynguyen
 server: shinyapps.io
 appId: 184258
-bundleId: 843191
+bundleId: 860724
 url: https://jennynguyen.shinyapps.io/recipe_finder/
-when: 1495933880.50031
+when: 1497054892.28061
 asMultiple: FALSE
 asStatic: FALSE

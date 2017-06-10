@@ -6,9 +6,9 @@ library(magrittr)
 load("recipes.Rdata")
 
 # options
-meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu") %>% sort
-veggie_options <- c("asparagus", "spinach", "mushrooms", "garlic", "dill", "shallots", "green onions", "cucumber", "lettuce", "mint", "thai basil", "yellow onion", "cilantro", "cabbage", "mustard greens", "taro", "yam", "rice paddy herbs", "elephant ear stem", "bean sprouts", "sweet potato") %>% sort
-fruit_options <- c("tomato", "pineapple") %>% sort
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu") %>% sort %>% unique
+veggie_options <- c("green beans", "carrot", "asparagus", "spinach", "mushrooms", "garlic", "dill", "shallots", "green onions", "cucumber", "lettuce", "mint", "thai basil", "yellow onion", "cilantro", "cabbage", "mustard greens", "taro", "yam", "rice paddy herbs", "elephant ear stem", "bean sprouts", "sweet potato") %>% sort %>% unique
+fruit_options <- c("tomato", "pineapple", "avocado", "mango", "strawberries") %>% sort %>% unique
 food_box <- function(type, option){
   column(width = 4,
          box(title = paste("Choose", type), width = NULL,
