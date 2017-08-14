@@ -1,3 +1,8 @@
+# Recipe Finder Server Code
+# Date: July 2017
+# Author: Jenny Nguyen
+# Email: jennifernguyen1992@gmail.com
+
 library(shiny)
 library(stringr)
 library(purrr)
@@ -16,10 +21,11 @@ shinyServer(function(input, output) {
       fruit = input$choose_fruit
     )
 
-    # finds matching dish for chosen options and all 'any' dishes
-    # prints out in alphabetical order
+    # finds matching dish for chosen options types and all 'any' dishes
+    # prints out unique options in alphabetical order
     matches <- map(names(chosen_options), function(type){
-      # finds all matches, returns if none requested
+
+      # finds any matches, returns nothing if none requested
       options <- chosen_options[[type]]
       if(length(options) == 0) return(character(0))
       map(options, function(x){
@@ -27,11 +33,12 @@ shinyServer(function(input, output) {
         any <- names(recipes)[str_detect(r[[str_to_title(type)]], "any")]
         return( c(matches, any) )
       })
+
     }) %>% unlist %>% unique %>% sort
 
   })
 
-  # output matches
+  # output matches as links to the recipe site
   lapply(1:length(recipes), function(i) {
     output[[paste0("match", i)]] <- renderUI({
 

@@ -1,14 +1,23 @@
+# Recipe Finder UI Code
+# Date: July 2017
+# Author: Jenny Nguyen
+# Email: jennifernguyen1992@gmail.com
 
-# open libraries
 library(shiny)
 library(shinydashboard)
 library(magrittr)
 load("recipes.Rdata")
 
 # options
-meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu") %>% sort %>% unique
-veggie_options <- c("green beans", "carrot", "asparagus", "spinach", "mushrooms", "garlic", "dill", "shallots", "green onions", "cucumber", "lettuce", "mint", "thai basil", "yellow onion", "cilantro", "cabbage", "mustard greens", "taro", "yam", "rice paddy herbs", "elephant ear stem", "bean sprouts", "sweet potato") %>% sort %>% unique
-fruit_options <- c("tomato", "pineapple", "avocado", "mango", "strawberries") %>% sort %>% unique
+clean <- function(x) x %>% sort %>% unique
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu") %>% clean
+veggie_options <- c("green beans", "carrot", "asparagus", "spinach", "mushrooms", "garlic",
+                    "dill", "shallots", "green onions", "cucumber", "lettuce", "mint", "thai basil",
+                    "yellow onion", "cilantro", "cabbage", "mustard greens", "taro", "yam",
+                    "rice paddy herbs", "elephant ear stem", "bean sprouts", "sweet potato", 
+                    "water chestnuts", "bok choy") %>%
+  clean
+fruit_options <- c("tomato", "pineapple", "avocado") %>% clean
 food_box <- function(type, option){
   column(width = 4,
          box(title = paste("Choose", type), width = NULL,
@@ -28,6 +37,7 @@ dashboardPage(
 
   dashboardBody(verticalLayout(
 
+    # inputs: ingredient options
     fixedRow(
 
       food_box("Meat", checkboxGroupInput("choose_meat", "", meat_options)),
@@ -36,7 +46,7 @@ dashboardPage(
 
     ),
 
-    # outputs: matched recipes
+    # outputs: links to matched recipes
     box(title = "Recipes", width = NULL, solidHeader = TRUE, status = "primary",
       lapply(1:length(recipes), function(i) {
         uiOutput(paste0("match",i))
