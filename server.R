@@ -9,9 +9,11 @@ library(purrr)
 
 ##################################################
 
-# load recipes
+# load list 'recipes'
 load("recipes.Rdata")
-r <- transpose(transpose(recipes)$ingredients)
+meal_recipes <- discard(recipes, transpose(recipes)$meal == "other")
+recipe_names <- names(meal_recipes)
+r <- transpose(transpose(meal_recipes)$ingredients)
 
 ##################################################
 # FUNCTIONS FOR UI INPUTS #
@@ -98,8 +100,8 @@ shinyServer(function(input, output) {
       options <- chosen_options[[type]]
       if(length(options) == 0) return(character(0))
       map(options, function(x){
-        matches <- names(recipes)[str_detect(r[[str_to_title(type)]], x)]
-        any <- names(recipes)[str_detect(r[[str_to_title(type)]], "any")]
+        matches <- recipe_names[str_detect(r[[str_to_title(type)]], x)]
+        any <- recipe_names[str_detect(r[[str_to_title(type)]], "any")]
         return( c(matches, any) )
       })
 
@@ -135,23 +137,27 @@ shinyServer(function(input, output) {
   #################
 
   # link to random dish
-  random_dish <- reactiveValues(dish = "http://jnguyen92.github.io/nhuyhoa//recipes/")
+  get_random <- function() sample(recipe_names, 1)
+  random_dish <- reactiveValues(dish = get_random())
 
   # detect changes in match list
   observeEvent(match_list(), {
-    random_dish$dish <- ifelse( length(match_list()) > 0, make_address(sample(match_list(), 1)), random_dish$dish )
+    random_dish$dish <- ifelse( length(match_list()) > 0, sample(match_list(), 1), get_random() )
   })
 
   # detect if the button was clicked before
   observeEvent(input$random, {
-    random_dish$dish <- ifelse( length(match_list()) > 0, make_address(sample(match_list(), 1)), random_dish$dish )
+    random_dish$dish <- ifelse( length(match_list()) > 0, sample(match_list(), 1), get_random() )
   })
 
   # create the action when click on the randomizer
   output$randomize <- renderUI({
 
+    # makes address
+    address <- make_address(random_dish$dish)
+
     # generates link cmd
-    link_cmd <- paste0("window.open('", random_dish$dish, "', '_blank')")
+    link_cmd <- paste0("window.open('", address, "', '_blank')")
 
     # makes the action button to open in new page
     actionButton("random", "I'm Feeling Lucky", onclick = link_cmd)
