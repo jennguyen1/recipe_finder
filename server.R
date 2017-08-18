@@ -7,17 +7,86 @@ library(shiny)
 library(stringr)
 library(purrr)
 
+##################################################
+
 # load recipes
 load("recipes.Rdata")
 r <- transpose(transpose(recipes)$ingredients)
 
+##################################################
+# FUNCTIONS FOR UI INPUTS #
+
+# function to clean up food ingredients
+clean <- function(x) x %>% unlist %>% sort %>% unique %>% discard(~ .x %in% c("", "any"))
+
+# obtain food options
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu") %>% clean
+veggie_options <- r$Veggies %>% clean
+fruit_options <- r$Fruit %>% clean
+
+##################################################
+# FUNCTIONS FOR UI OUTPUTS #
+
+make_address <- function(name){
+  address <- str_replace_all(name, " ", "-") %>%
+    paste0("http://jnguyen92.github.io/nhuyhoa//2017/05/", ., ".html")
+  address
+}
+
+##################################################
+
+# start shiny function
 shinyServer(function(input, output) {
 
-  # chosen options from user
+
+  #################
+  # RECIPE FINDER #
+  #################
+
+  # function to format the box per each food group
+  food_box <- function(type, option){
+
+    # whether to check all: no if all button not available or not previously checked
+    t <- paste0("all_", type)
+    if( is.null(input[[t]]) ){
+      check_all <- FALSE
+    } else if( !input[[t]] ){
+      check_all <- FALSE
+    } else{
+      check_all <- TRUE
+    }
+
+    # whether to select all group input buttons based on check all
+    if(check_all){
+      selected <- option
+    } else{
+      selected <- NULL
+    }
+
+    # make box
+    column(width = 4,
+           box(title = paste("Choose", str_to_title(type)), width = NULL,
+               solidHeader = TRUE, status = "primary", collapsible = TRUE,
+               checkboxInput(t, "all", check_all),
+               checkboxGroupInput(paste0("choose_", type), "", option, selected))
+    )
+  }
+
+  # UI Inputs rendering
+  output$input_selection_options <- renderUI(
+    fixedRow(
+      food_box("meat", meat_options),
+      food_box("veggies", veggie_options),
+      food_box("fruit", fruit_options)
+    )
+  )
+
+
+  # process chosen options from user
   match_list <- reactive({
     chosen_options <- list(
       meat = input$choose_meat,
-      veggies = input$choose_veggie,
+      veggies = input$choose_veggies,
       fruit = input$choose_fruit
     )
 
@@ -38,17 +107,56 @@ shinyServer(function(input, output) {
 
   })
 
-  # output matches as links to the recipe site
+  # creating output objects - create links to recipe site
+  # loop over recipes and assign output objects within there
   lapply(1:length(recipes), function(i) {
     output[[paste0("match", i)]] <- renderUI({
-
       name <- match_list()[i]
-      address <- name %>%
-        str_replace_all(" ", "-") %>%
-        paste0("http://jnguyen92.github.io/nhuyhoa//2017/05/", ., ".html")
-      if(!is.na(name)) h4(a(href = address, name))
-
+      if(!is.na(name)) h4(a(href = make_address(name), name))
     })
   })
+
+
+  # UI Outputs rendering
+  # generates ui output for matching
+  all_matches <- reactive({
+    lapply(1:length(recipes), function(i) {
+      uiOutput(paste0("match",i))
+      })
+  })
+
+
+  # outputs final choice depending on author
+  output$recipe_options <- renderUI( all_matches() )
+
+
+  #################
+  # RANDOM PICKER #
+  #################
+
+  # link to random dish
+  random_dish <- reactiveValues(dish = "http://jnguyen92.github.io/nhuyhoa//recipes/")
+
+  # detect changes in match list
+  observeEvent(match_list(), {
+    random_dish$dish <- ifelse( length(match_list()) > 0, make_address(sample(match_list(), 1)), random_dish$dish )
+  })
+
+  # detect if the button was clicked before
+  observeEvent(input$random, {
+    random_dish$dish <- ifelse( length(match_list()) > 0, make_address(sample(match_list(), 1)), random_dish$dish )
+  })
+
+  # create the action when click on the randomizer
+  output$randomize <- renderUI({
+
+    # generates link cmd
+    link_cmd <- paste0("window.open('", random_dish$dish, "', '_blank')")
+
+    # makes the action button to open in new page
+    actionButton("random", "I'm Feeling Lucky", onclick = link_cmd)
+
+  })
+
 
 })
