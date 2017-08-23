@@ -19,22 +19,26 @@ dashboardPage(
 
   # app main body
   dashboardBody(verticalLayout(
-
-    # inputs: choose ingredients to use
     tabBox(width = NULL, selected = "Meals",
 
+      # meal options
       tabPanel("Meals",
-        uiOutput("input_selection_options")
+               # inputs: choose ingredients to use
+               uiOutput("input_selection_options"),
+
+               # outputs: links to matched recipes
+               box(title = "Recipes", width = NULL, solidHeader = TRUE, status = "primary",
+                   uiOutput("randomize"),
+                   uiOutput("recipe_options")
+               )
+      ),
+
+      # dessert options
+      tabPanel("Desserts",
+               uiOutput("randomize_dessert")
       )
 
-    ),
-
-    # outputs: links to matched recipes
-    box(title = "Recipes", width = NULL, solidHeader = TRUE, status = "primary",
-        uiOutput("randomize"),
-        uiOutput("recipe_options")
     )
-
   ))
 )
 

@@ -7,15 +7,22 @@ library(shiny)
 library(stringr)
 library(purrr)
 
-##################################################
+#-------------------------------------------------
 
 # load list 'recipes'
 load("recipes.Rdata")
+
+# dessert
+dessert_recipes <- keep(recipes, transpose(recipes)$meal == "dessert")
+dessert_names <- names(dessert_recipes)
+
+# meals
 meal_recipes <- discard(recipes, transpose(recipes)$meal == "other")
 recipe_names <- names(meal_recipes)
 r <- transpose(transpose(meal_recipes)$ingredients)
 
-##################################################
+
+#-------------------------------------------------
 # FUNCTIONS FOR UI INPUTS #
 
 # function to clean up food ingredients
@@ -26,7 +33,8 @@ meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "
 veggie_options <- r$Veggies %>% clean
 fruit_options <- r$Fruit %>% clean
 
-##################################################
+
+#-------------------------------------------------
 # FUNCTIONS FOR UI OUTPUTS #
 
 make_address <- function(name){
@@ -35,7 +43,8 @@ make_address <- function(name){
   address
 }
 
-##################################################
+#-------------------------------------------------
+
 
 # start shiny function
 shinyServer(function(input, output) {
@@ -164,5 +173,31 @@ shinyServer(function(input, output) {
 
   })
 
+  ##################
+  # RANDOM DESSERT #
+  ##################
+
+  # link to random dish
+  get_random_dessert <- function() sample(dessert_names, 1)
+  random_dessert <- reactiveValues(dish = get_random_dessert())
+
+  # detect if the button was clicked before
+  observeEvent(input$random_dessert, {
+    random_dessert$dish <- get_random_dessert()
+  })
+
+  # create the action when click on the randomizer
+  output$randomize_dessert <- renderUI({
+
+    # makes address
+    address <- make_address(random_dessert$dish)
+
+    # generates link cmd
+    link_cmd <- paste0("window.open('", address, "', '_blank')")
+
+    # makes the action button to open in new page
+    actionButton("random_dessert", "Lucky Dessert", onclick = link_cmd)
+
+  })
 
 })
