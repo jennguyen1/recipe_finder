@@ -37,16 +37,23 @@ fruit_options <- r$Fruit %>% clean
 #-------------------------------------------------
 # FUNCTIONS FOR UI OUTPUTS #
 
+# recipe address
 make_address <- function(name){
   address <- str_replace_all(name, " ", "-") %>%
     paste0("http://jnguyen92.github.io/nhuyhoa//2017/05/", ., ".html")
-  address
+  return(address)
+}
+
+# recipe picture address
+make_pic_address <- function(name){
+  fixed_name <- str_replace(name, "\\s+\\(.*", "")
+  address <- paste0("http://jnguyen92.github.io/nhuyhoa/figure/food/", fixed_name, ".JPG")
+  return(address)
 }
 
 #-------------------------------------------------
 
 
-# start shiny function
 shinyServer(function(input, output) {
 
 
@@ -92,7 +99,6 @@ shinyServer(function(input, output) {
     )
   )
 
-
   # process chosen options from user
   match_list <- reactive({
     chosen_options <- list(
@@ -116,6 +122,8 @@ shinyServer(function(input, output) {
 
     }) %>% unlist %>% unique %>% sort
 
+    return(matches)
+
   })
 
   # creating output objects - create links to recipe site
@@ -123,13 +131,20 @@ shinyServer(function(input, output) {
   lapply(1:length(recipes), function(i) {
     output[[paste0("match", i)]] <- renderUI({
       name <- match_list()[i]
-      if(!is.na(name)) h4(a(href = make_address(name), name))
+      if(!is.na(name)){
+
+        # if the match exists - export a picture & link of recipe
+        column(width = 12,
+          a(href = make_address(name), img(src = make_pic_address(name), width = 200, height = 150), target = "_blank"),
+          h4(a(href = make_address(name), name, target = "_blank")),
+          h1()
+        )
+
+      }
     })
   })
 
-
-  # UI Outputs rendering
-  # generates ui output for matching
+  # generates ui output for matching options
   output$recipe_options <- renderUI({
     lapply(1:length(recipes), function(i) {
       uiOutput(paste0("match",i))
@@ -169,6 +184,7 @@ shinyServer(function(input, output) {
 
   })
 
+
   ##################
   # RANDOM DESSERT #
   ##################
@@ -192,22 +208,23 @@ shinyServer(function(input, output) {
     link_cmd <- paste0("window.open('", address, "', '_blank')")
 
     # makes the action button to open in new page
-    actionButton("random_dessert", "Lucky Dessert", onclick = link_cmd)
+    actionButton("random_dessert", "I'm Feeling Lucky - Dessert", onclick = link_cmd)
 
   })
 
   # creating output objects - dessert pic which links to recipe site
   lapply(1:length(dessert_names), function(i){
 
-    pic <- paste0("http://jnguyen92.github.io/nhuyhoa/figure/food/", dessert_names[i], ".JPG")
+    pic <- make_pic_address(dessert_names[i])
     link <- make_address(dessert_names[i])
 
     output[[paste0("dessert", i)]] <- renderUI({
-      a(img(src = pic, width = 200, height = 150), href = link)
+      a(href = link, img(src = pic, width = 200, height = 150), target = "_blank")
     })
 
   })
 
+  # generates ui output for all desserts
   output$desserts <- renderUI({
     lapply(1:length(dessert_names), function(i){
       uiOutput(paste0("dessert", i))

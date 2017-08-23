@@ -28,7 +28,7 @@ dashboardPage(
 
                # outputs: links to matched recipes
                box(title = "Recipes", width = NULL, solidHeader = TRUE, status = "primary",
-                   uiOutput("randomize"),
+                   uiOutput("randomize"), h1(), h1(),
                    uiOutput("recipe_options")
                )
       ),
@@ -36,7 +36,7 @@ dashboardPage(
       # dessert options
       tabPanel("Desserts",
                uiOutput("randomize_dessert"),
-               p(),
+               h1(), h1(),
                uiOutput("desserts")
       )
 
