@@ -35,7 +35,9 @@ dashboardPage(
 
       # dessert options
       tabPanel("Desserts",
-               uiOutput("randomize_dessert")
+               uiOutput("randomize_dessert"),
+               p(),
+               uiOutput("desserts")
       )
 
     )

@@ -130,15 +130,11 @@ shinyServer(function(input, output) {
 
   # UI Outputs rendering
   # generates ui output for matching
-  all_matches <- reactive({
+  output$recipe_options <- renderUI({
     lapply(1:length(recipes), function(i) {
       uiOutput(paste0("match",i))
-      })
+    })
   })
-
-
-  # outputs final choice depending on author
-  output$recipe_options <- renderUI( all_matches() )
 
 
   #################
@@ -199,5 +195,24 @@ shinyServer(function(input, output) {
     actionButton("random_dessert", "Lucky Dessert", onclick = link_cmd)
 
   })
+
+  # creating output objects - dessert pic which links to recipe site
+  lapply(1:length(dessert_names), function(i){
+
+    pic <- paste0("http://jnguyen92.github.io/nhuyhoa/figure/food/", dessert_names[i], ".JPG")
+    link <- make_address(dessert_names[i])
+
+    output[[paste0("dessert", i)]] <- renderUI({
+      a(img(src = pic, width = 200, height = 150), href = link)
+    })
+
+  })
+
+  output$desserts <- renderUI({
+    lapply(1:length(dessert_names), function(i){
+      uiOutput(paste0("dessert", i))
+    })
+  })
+
 
 })
