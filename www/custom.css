@@ -1,0 +1,56 @@
+
+/* make the entire header black */
+.skin-black .main-header .logo, .skin-black .main-header .logo:hover {
+
+width: 100%;
+text-align: left;
+margin-bottom: 10px;
+
+font-weight: bold;
+color: white;
+background-color: black;
+border-right: transparent;
+display: block;
+}
+
+/* remove navbar */
+.skin-black .main-header .navbar{
+display: none;
+}
+
+/* change recipe links to white font */
+.match_recipe, .match_recipe:hover {
+color: white;
+}
+
+/* make food boxes background transparent */
+.yellow {
+background-color: rgba(243, 156, 18, .7);
+color: white;
+}
+.green {
+background-color: rgba(0, 166, 90, .7);
+color: white;
+}
+.red {
+background-color: rgba(221, 75, 57, .7);
+color: white;
+}
+.light-blue {
+background-color: rgba(69, 130, 236, .7);
+color: white;
+}
+.teal {
+background-color: rgba(57, 204, 204, .7);
+}
+
+/* change main color of primary boxes */
+.box.box-solid.box-primary>.box-header {
+  color:#fff;
+  background:#4582ec
+                    }
+
+.box.box-solid.box-primary{
+border-color: #4582ec;
+}
+

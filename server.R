@@ -57,7 +57,7 @@ output_match_link <- function(name){
   if(!is.na(name)){
     column(width = 12,
            a(href = make_address(name), img(src = make_pic_address(name), width = 200, height = 150), target = "_blank"),
-           h4(a(href = make_address(name), name, target = "_blank")),
+           h5(a(href = make_address(name), name, target = "_blank", class = "match_recipe")),
            h1()
     )
   }
@@ -94,10 +94,20 @@ shinyServer(function(input, output) {
       selected <- NULL
     }
 
+    status <- switch(type,
+                     meat = "danger",
+                     veggies = "success",
+                     fruit = "warning")
+
+    bg <- switch(type,
+                 meat = "red",
+                 veggies = "green",
+                 fruit = "yellow")
+
     # make box
     column(width = 4,
-           box(title = paste("Choose", str_to_title(type)), width = NULL,
-               solidHeader = TRUE, status = "primary", collapsible = TRUE,
+           box(title = paste("Choose", str_to_title(type)), width = NULL, collapsible = TRUE,
+               solidHeader = TRUE, status = status, class = bg,
                checkboxInput(t, "all", check_all),
                checkboxGroupInput(paste0("choose_", type), "", option, selected))
     )
@@ -211,7 +221,7 @@ shinyServer(function(input, output) {
     link_cmd <- paste0("window.open('", address, "', '_blank')")
 
     # makes the action button to open in new page
-    actionButton("random_dessert", "I'm Feeling Lucky - Dessert", onclick = link_cmd)
+    actionButton("random_dessert", "I'm Feeling Lucky", onclick = link_cmd)
 
   })
 

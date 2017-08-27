@@ -9,7 +9,7 @@ library(magrittr)
 load("recipes.Rdata")
 
 # UI functions
-dashboardPage(
+dashboardPage(skin = "black",
 
   # app title
   dashboardHeader(title = "Recipe Finder"),
@@ -19,10 +19,13 @@ dashboardPage(
 
   # app main body
   dashboardBody(
+    # CSS
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.css"),
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
 
+    # app
     verticalLayout(
       tabBox(width = NULL, selected = "Meals",
 
@@ -32,17 +35,22 @@ dashboardPage(
                  uiOutput("input_selection_options"),
 
                  # outputs: links to matched recipes
-                 box(title = "Recipes", width = NULL, solidHeader = TRUE, status = "primary",
-                     uiOutput("randomize"), h1(), h1(),
+                 box(title = "Recipes", width = NULL,
+                     solidHeader = TRUE, status = "primary", class = "light-blue",
+                     uiOutput("randomize"),
+                     br(),
                      uiOutput("recipe_options")
                  )
         ),
 
         # dessert options
         tabPanel("Desserts",
-                 uiOutput("randomize_dessert"),
-                 h1(), h1(),
-                 uiOutput("desserts")
+                 box(width = NULL,
+                   solidHeader = TRUE, status = "info", class = "teal",
+                   uiOutput("randomize_dessert"),
+                   br(),
+                   uiOutput("desserts")
+                 )
         )
 
       )
