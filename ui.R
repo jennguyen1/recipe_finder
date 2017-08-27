@@ -45,7 +45,7 @@ dashboardPage(skin = "black",
 
         # dessert options
         tabPanel("Desserts",
-                 box(width = NULL,
+                 box(title = "Choose Dessert", width = NULL,
                    solidHeader = TRUE, status = "info", class = "teal",
                    uiOutput("randomize_dessert"),
                    br(),
