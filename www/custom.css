@@ -2,46 +2,61 @@
 /* make the entire header black */
 .skin-black .main-header .logo, .skin-black .main-header .logo:hover {
 
-width: 100%;
-text-align: left;
-margin-bottom: 10px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 10px;
 
-font-weight: bold;
-color: white;
-background-color: black;
-border-right: transparent;
-display: block;
+  font-weight: bold;
+  color: white;
+  background-color: black;
+  border-right: transparent;
+  display: block;
 }
 
 /* remove navbar */
 .skin-black .main-header .navbar{
-display: none;
+  display: none;
 }
 
 /* change recipe links to white font */
-.match_recipe, .match_recipe:hover {
-color: white;
+.match_recipe a, .match_recipe a:hover {
+  color: white;
+}
+
+/* change height of box for grid */
+.light-blue .col-sm-3 {
+  height: 220px;
+  min-width: 200px;
+}
+
+.teal .col-sm-3 {
+  height: 220px;
+  min-width: 200px;
+}
+
+.match_recipe {
+  margin: 5px;
 }
 
 /* make food boxes background transparent */
 .yellow {
-background-color: rgba(243, 156, 18, .7);
-color: white;
+  background-color: rgba(243, 156, 18, .7);
+  color: white;
 }
 .green {
-background-color: rgba(0, 166, 90, .7);
-color: white;
+  background-color: rgba(0, 166, 90, .7);
+  color: white;
 }
 .red {
-background-color: rgba(221, 75, 57, .7);
-color: white;
+  background-color: rgba(221, 75, 57, .7);
+  color: white;
 }
 .light-blue {
-background-color: rgba(69, 130, 236, .7);
-color: white;
+  background-color: rgba(69, 130, 236, .7);
+  color: white;
 }
 .teal {
-background-color: rgba(57, 204, 204, .7);
+  background-color: rgba(57, 204, 204, .7);
 }
 
 /* change main color of primary boxes */
@@ -51,17 +66,17 @@ background-color: rgba(57, 204, 204, .7);
                     }
 
 .box.box-solid.box-primary{
-border-color: #4582ec;
+  border-color: #4582ec;
 }
 
 /* change main color of info boxes */
 .box.box-solid.box-info>.box-header {
   color:#fff;
   background:rgb(57, 204, 204)
-                    }
+}
 
 .box.box-solid.box-info{
-border-color: rgb(57, 204, 204);
+  border-color: rgb(57, 204, 204);
 }
 
 /* navigation tabs */

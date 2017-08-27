@@ -57,7 +57,7 @@ output_match_link <- function(name, w){
   if(!is.na(name)){
     column(width = w,
            a(href = make_address(name), img(src = make_pic_address(name), width = 200, height = 150), target = "_blank"),
-           h5(a(href = make_address(name), name, target = "_blank", class = "match_recipe")),
+           h5(a(href = make_address(name), name, target = "_blank")),
            br()
     )
   }
@@ -149,19 +149,26 @@ shinyServer(function(input, output) {
 
   })
 
+
   # creating output objects - create links to recipe site
   # loop over recipes and assign output objects within there
-  lapply(1:length(recipes), function(i) {
-    output[[paste0("match", i)]] <- renderUI({
-      output_match_link(match_list()[i], 12)
-    })
+  observeEvent(match_list(), {
+    if( length(match_list()) > 0 ){
+      lapply(1:length(match_list()), function(i) {
+        output[[paste0("match", i)]] <- renderUI({
+          output_match_link(match_list()[i], 3)
+        })
+      })
+    }
   })
 
   # generates ui output for matching options
   output$recipe_options <- renderUI({
-    lapply(1:length(recipes), function(i) {
-      uiOutput(paste0("match",i))
-    })
+    if( length(match_list()) > 0 ){
+      lapply(1:length(match_list()), function(i) {
+        uiOutput(paste0("match",i), class = "match_recipe")
+      })
+    }
   })
 
 
@@ -235,9 +242,8 @@ shinyServer(function(input, output) {
   # generates ui output for all desserts
   output$desserts <- renderUI({
     lapply(1:length(dessert_names), function(i){
-      uiOutput(paste0("dessert", i))
+      uiOutput(paste0("dessert", i), class = "match_recipe")
     })
   })
-
 
 })
