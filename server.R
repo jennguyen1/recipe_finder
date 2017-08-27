@@ -23,7 +23,7 @@ r <- transpose(transpose(meal_recipes)$ingredients)
 
 
 #-------------------------------------------------
-# FUNCTIONS FOR UI INPUTS #
+# FUNCTIONS FOR UI INPUTS ------------------------
 
 # function to clean up food ingredients
 clean <- function(x) x %>% unlist %>% sort %>% unique %>% discard(~ .x %in% c("", "any"))
@@ -35,7 +35,7 @@ fruit_options <- r$Fruit %>% clean
 
 
 #-------------------------------------------------
-# FUNCTIONS FOR UI OUTPUTS #
+# FUNCTIONS FOR UI OUTPUTS -----------------------
 
 # recipe address
 make_address <- function(name){
@@ -51,6 +51,19 @@ make_pic_address <- function(name){
   return(address)
 }
 
+# output match link for list
+output_match_link <- function(name){
+  # if the match exists - export a picture & link of recipe
+  if(!is.na(name)){
+    column(width = 12,
+           a(href = make_address(name), img(src = make_pic_address(name), width = 200, height = 150), target = "_blank"),
+           h4(a(href = make_address(name), name, target = "_blank")),
+           h1()
+    )
+  }
+}
+
+
 #-------------------------------------------------
 
 
@@ -61,7 +74,7 @@ shinyServer(function(input, output) {
   # RECIPE FINDER #
   #################
 
-  # function to format the box per each food group
+  # function to format the box per each food group with an 'all' function
   food_box <- function(type, option){
 
     # whether to check all: no if all button not available or not previously checked
@@ -91,15 +104,15 @@ shinyServer(function(input, output) {
   }
 
   # UI Inputs rendering
-  output$input_selection_options <- renderUI(
+  output$input_selection_options <- renderUI({
     fixedRow(
       food_box("meat", meat_options),
       food_box("veggies", veggie_options),
       food_box("fruit", fruit_options)
     )
-  )
+  })
 
-  # process chosen options from user
+  # process chosen options from user - generate a list of matches
   match_list <- reactive({
     chosen_options <- list(
       meat = input$choose_meat,
@@ -130,17 +143,7 @@ shinyServer(function(input, output) {
   # loop over recipes and assign output objects within there
   lapply(1:length(recipes), function(i) {
     output[[paste0("match", i)]] <- renderUI({
-      name <- match_list()[i]
-      if(!is.na(name)){
-
-        # if the match exists - export a picture & link of recipe
-        column(width = 12,
-          a(href = make_address(name), img(src = make_pic_address(name), width = 200, height = 150), target = "_blank"),
-          h4(a(href = make_address(name), name, target = "_blank")),
-          h1()
-        )
-
-      }
+      output_match_link(match_list()[i])
     })
   })
 

@@ -1,2 +1,7 @@
 .Rhistory
 .Rproj.user
+*.Rproj
+/rsconnect/ 
+
+
+rsconnect/shinyapps.io/jennynguyen/recipe_finder.dcf
