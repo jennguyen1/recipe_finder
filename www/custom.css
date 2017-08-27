@@ -54,3 +54,22 @@ background-color: rgba(57, 204, 204, .7);
 border-color: #4582ec;
 }
 
+/* change main color of info boxes */
+.box.box-solid.box-info>.box-header {
+  color:#fff;
+  background:rgb(57, 204, 204)
+                    }
+
+.box.box-solid.box-info{
+border-color: rgb(57, 204, 204);
+}
+
+/* navigation tabs */
+.nav-tabs-custom>.nav-tabs {
+  font-size: 18px;
+}
+
+.nav-tabs-custom>.nav-tabs .active a {
+  font-weight: bold;
+}
+
