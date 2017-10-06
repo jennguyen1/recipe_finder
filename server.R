@@ -17,7 +17,7 @@ dessert_recipes <- keep(recipes, transpose(recipes)$meal == "dessert")
 dessert_names <- names(dessert_recipes)
 
 # meals
-meal_recipes <- discard(recipes, transpose(recipes)$meal == "other")
+meal_recipes <- keep(recipes, transpose(recipes)$meal == "meal")
 recipe_names <- names(meal_recipes)
 r <- transpose(transpose(meal_recipes)$ingredients)
 
@@ -29,7 +29,7 @@ r <- transpose(transpose(meal_recipes)$ingredients)
 clean <- function(x) x %>% unlist %>% sort %>% unique %>% discard(~ .x %in% c("", "any"))
 
 # obtain food options
-meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu") %>% clean
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster") %>% clean
 veggie_options <- r$Veggies %>% clean
 fruit_options <- r$Fruit %>% clean
 
@@ -40,14 +40,14 @@ fruit_options <- r$Fruit %>% clean
 # recipe address
 make_address <- function(name){
   address <- str_replace_all(name, " ", "-") %>%
-    paste0("http://jnguyen92.github.io/nhuyhoa//2017/05/", ., ".html")
+    paste0("http://jnguyen92.github.io/nhuyhoa//2017/05/Recipe-", ., ".html")
   return(address)
 }
 
 # recipe picture address
 make_pic_address <- function(name){
-  fixed_name <- str_replace(name, "\\s+\\(.*", "")
-  address <- paste0("http://jnguyen92.github.io/nhuyhoa/figure/food/", fixed_name, ".JPG")
+  fixed_name <- str_replace(name, "\\s+\\(.*", "") %>% str_replace_all(" ", "_")
+  address <- paste0("http://jnguyen92.github.io/nhuyhoa/figure/food/thumbnail/", fixed_name, ".JPG")
   return(address)
 }
 
