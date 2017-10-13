@@ -10,14 +10,14 @@ library(purrr)
 #-------------------------------------------------
 
 # load list 'recipes'
-load("recipes.Rdata")
+load("data/recipes.Rdata")
 
 # dessert
 dessert_recipes <- keep(recipes, transpose(recipes)$meal == "dessert")
 dessert_names <- names(dessert_recipes)
 
 # meals
-meal_recipes <- keep(recipes, transpose(recipes)$meal == "meal")
+meal_recipes <- keep(recipes, transpose(recipes)$meal != "other")
 recipe_names <- names(meal_recipes)
 r <- transpose(transpose(meal_recipes)$ingredients)
 
@@ -40,7 +40,7 @@ fruit_options <- r$Fruit %>% clean
 # recipe address
 make_address <- function(name){
   address <- str_replace_all(name, " ", "-") %>%
-    paste0("http://jennguyen1.github.io/nhuyhoa//2017/05/Recipe-", ., ".html")
+    paste0("http://jennguyen1.github.io/nhuyhoa/2017/05/Recipe-", ., ".html")
   return(address)
 }
 
