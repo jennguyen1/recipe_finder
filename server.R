@@ -40,14 +40,14 @@ fruit_options <- r$Fruit %>% clean
 # recipe address
 make_address <- function(name){
   address <- str_replace_all(name, " ", "-") %>%
-    paste0("http://jnguyen92.github.io/nhuyhoa//2017/05/Recipe-", ., ".html")
+    paste0("http://jennguyen1.github.io/nhuyhoa//2017/05/Recipe-", ., ".html")
   return(address)
 }
 
 # recipe picture address
 make_pic_address <- function(name){
   fixed_name <- str_replace(name, "\\s+\\(.*", "") %>% str_replace_all(" ", "_")
-  address <- paste0("http://jnguyen92.github.io/nhuyhoa/figure/food/thumbnail/", fixed_name, ".JPG")
+  address <- paste0("http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/", fixed_name, ".JPG")
   return(address)
 }
 
