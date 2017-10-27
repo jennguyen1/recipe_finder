@@ -5,33 +5,32 @@
 
 library(shiny)
 library(stringr)
+library(dplyr)
 library(purrr)
+library(RSQLite)
 
 #-------------------------------------------------
 
-# load list 'recipes'
-load("data/recipes.Rdata")
+# load recipes
+connect <- RSQLite::dbConnect(drv = RSQLite::SQLite(), dbname = "data/recipes.db")
+recipes <- RSQLite::dbGetQuery(conn = connect, statement = "SELECT * FROM recipes")
+ingredients <- RSQLite::dbGetQuery(conn = connect, statement = "SELECT * FROM ingredients")
+RSQLite::dbDisconnect(conn = connect)
 
-# dessert
-dessert_recipes <- keep(recipes, transpose(recipes)$meal == "dessert")
-dessert_names <- names(dessert_recipes)
-
-# meals
-meal_recipes <- keep(recipes, transpose(recipes)$meal != "other")
-recipe_names <- names(meal_recipes)
-r <- transpose(transpose(meal_recipes)$ingredients)
-
+recipe_info <- merge(recipes, ingredients, by = "recipe")
+dessert_recipes <- subset(recipe_info, meal_type == "dessert")
+meal_recipes <- subset(recipe_info, meal_type != "other")
 
 #-------------------------------------------------
 # FUNCTIONS FOR UI INPUTS ------------------------
 
 # function to clean up food ingredients
-clean <- function(x) x %>% unlist %>% sort %>% unique %>% discard(~ .x %in% c("", "any"))
+clean <- function(food_type) ingredients %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
 
 # obtain food options
 meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster") %>% clean
-veggie_options <- r$Veggies %>% clean
-fruit_options <- r$Fruit %>% clean
+veggie_options <- clean("veggie")
+fruit_options <- clean("fruit")
 
 
 #-------------------------------------------------
@@ -124,29 +123,42 @@ shinyServer(function(input, output) {
 
   # process chosen options from user - generate a list of matches
   match_list <- reactive({
+
+    match_algorithm <- 'or' # make an option for this
+
     chosen_options <- list(
       meat = input$choose_meat,
-      veggies = input$choose_veggies,
+      veggie = input$choose_veggies,
       fruit = input$choose_fruit
     )
 
     # finds matching dish for chosen options types and all 'any' dishes
-    # prints out unique options in alphabetical order
-    matches <- map(names(chosen_options), function(type){
+    if(match_algorithm == 'or'){
 
-      # finds any matches, returns nothing if none requested
-      options <- chosen_options[[type]]
-      if(length(options) == 0) return(character(0))
-      map(options, function(x){
-        matches <- recipe_names[str_detect(r[[str_to_title(type)]], x)]
-        any <- recipe_names[str_detect(r[[str_to_title(type)]], "any")]
-        return( c(matches, any) )
-      })
+      #' matching ingredients based on or
+      matches <- map2_df(names(chosen_options), chosen_options, function(name, options){
+        if( length(options) == 0 ) return(data.frame())
 
-    }) %>% unlist %>% unique %>% sort
+        type_match <- subset(ingredients, type == name & str_detect(ingredients, options))
+        any <- subset(ingredients, type == name & ingredients == "any")
+        bind_rows(any, type_match) %>% dplyr::select(recipe)
+      }) %>% distinct() %>% arrange(recipe) %>% pull(recipe)
+
+    } else{
+
+      # matching ingredients based on and
+      matches <- map2(names(chosen_options), chosen_options, function(name, options){
+        if( length(options) == 0 ) return(data.frame())
+
+        type_match <- map(options, ~ subset(ingredients, type == name & ingredients == .x)) %>%
+          reduce(~ merge(.x, .y, 'recipe'))
+        any <- subset(ingredients, type == name & ingredients == "any")
+        merge(any, type_match, "recipe") %>% dplyr::select(recipe)
+      }) %>% discard(~ nrow(.x) == 0) %>% reduce(~ merge(.x, .y, 'recipe')) %>% pull(recipe)
+
+    }
 
     return(matches)
-
   })
 
 
