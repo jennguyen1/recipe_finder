@@ -18,8 +18,12 @@ ingredients <- RSQLite::dbGetQuery(conn = connect, statement = "SELECT * FROM in
 RSQLite::dbDisconnect(conn = connect)
 
 recipe_info <- merge(recipes, ingredients, by = "recipe")
+
 dessert_recipes <- subset(recipe_info, meal_type == "dessert")
 meal_recipes <- subset(recipe_info, meal_type != "other")
+
+recipe_names <- unique(recipe_info$recipe)
+dessert_names <- unique(dessert_recipes$recipe)
 
 #-------------------------------------------------
 # FUNCTIONS FOR UI INPUTS ------------------------
@@ -28,7 +32,7 @@ meal_recipes <- subset(recipe_info, meal_type != "other")
 clean <- function(food_type) ingredients %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
 
 # obtain food options
-meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster") %>% clean
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha") %>% unique() %>% sort()
 veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
 
@@ -124,7 +128,7 @@ shinyServer(function(input, output) {
   # process chosen options from user - generate a list of matches
   match_list <- reactive({
 
-    match_algorithm <- 'or' # make an option for this
+    match_algorithm <- 'or' # TODO make an option for this
 
     chosen_options <- list(
       meat = input$choose_meat,
@@ -137,7 +141,7 @@ shinyServer(function(input, output) {
 
       #' matching ingredients based on or
       matches <- map2_df(names(chosen_options), chosen_options, function(name, options){
-        if( length(options) == 0 ) return(data.frame())
+        if( length(options) == 0 ) return(data.frame(recipe = character(0)))
 
         type_match <- subset(ingredients, type == name & str_detect(ingredients, options))
         any <- subset(ingredients, type == name & ingredients == "any")
@@ -148,12 +152,12 @@ shinyServer(function(input, output) {
 
       # matching ingredients based on and
       matches <- map2(names(chosen_options), chosen_options, function(name, options){
-        if( length(options) == 0 ) return(data.frame())
+        if( length(options) == 0 ) return(data.frame(recipe = character(0)))
 
         type_match <- map(options, ~ subset(ingredients, type == name & ingredients == .x)) %>%
           reduce(~ merge(.x, .y, 'recipe'))
         any <- subset(ingredients, type == name & ingredients == "any")
-        merge(any, type_match, "recipe") %>% dplyr::select(recipe)
+        merge(any, type_match, 'recipe') %>% dplyr::select(recipe)
       }) %>% discard(~ nrow(.x) == 0) %>% reduce(~ merge(.x, .y, 'recipe')) %>% pull(recipe)
 
     }

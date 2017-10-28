@@ -6,7 +6,6 @@
 library(shiny)
 library(shinydashboard)
 library(magrittr)
-load("recipes.Rdata")
 
 # UI functions
 dashboardPage(skin = "black",
