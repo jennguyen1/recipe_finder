@@ -41,11 +41,10 @@ fruit_options <- clean("fruit")
 # FUNCTIONS FOR UI OUTPUTS -----------------------
 
 # recipe address
-make_link <- function(name){
+make_address <- function(name){
   address <- str_replace_all(name, " ", "-") %>%
     paste0("http://jennguyen1.github.io/nhuyhoa/2017/05/Recipe-", ., ".html")
-  link <- stringr::str_interp("window.open('${address}', '_blank')")
-  return(link)
+  return(address)
 }
 
 # recipe picture address
@@ -65,6 +64,13 @@ output_match_link <- function(name, w){
            br()
     )
   }
+}
+
+# open link in new page
+make_link <- function(name){
+  address <- make_address(name)
+  link <- stringr::str_interp("window.open('${address}', '_blank')")
+  return(link)
 }
 
 # or match algorithm
