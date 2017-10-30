@@ -154,11 +154,12 @@ shinyServer(function(input, output) {
       matches <- map2(names(chosen_options), chosen_options, function(name, options){
         if( length(options) == 0 ) return(data.frame(recipe = character(0)))
 
-        type_match <- map(options, ~ subset(ingredients, type == name & ingredients == .x)) %>%
+        type_match <- map(options, ~ subset(ingredients, type == name & str_detect(ingredients, .x))) %>%
           reduce(~ merge(.x, .y, 'recipe'))
         any <- subset(ingredients, type == name & ingredients == "any")
         dplyr::bind_rows(type_match, any) %>% dplyr::select(recipe) %>% distinct()
       }) %>% discard(~ nrow(.x) == 0) 
+      
       if( length(matches) == 0 ){
         matches <- character(0)
       } else{
