@@ -22,14 +22,14 @@ recipe_info <- merge(recipes, ingredients, by = "recipe")
 dessert_recipes <- subset(recipe_info, meal_type == "dessert")
 meal_recipes <- subset(recipe_info, meal_type != "other")
 
-recipe_names <- unique(recipe_info$recipe)
+recipe_names <- unique(meal_recipes$recipe)
 dessert_names <- unique(dessert_recipes$recipe)
 
 #-------------------------------------------------
 # FUNCTIONS FOR UI INPUTS ------------------------
 
 # function to clean up food ingredients
-clean <- function(food_type) ingredients %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
+clean <- function(food_type) meal_recipes %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
 
 # obtain food options
 meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha", "duck") %>% unique() %>% sort()
@@ -41,10 +41,11 @@ fruit_options <- clean("fruit")
 # FUNCTIONS FOR UI OUTPUTS -----------------------
 
 # recipe address
-make_address <- function(name){
+make_link <- function(name){
   address <- str_replace_all(name, " ", "-") %>%
     paste0("http://jennguyen1.github.io/nhuyhoa/2017/05/Recipe-", ., ".html")
-  return(address)
+  link <- stringr::str_interp("window.open('${address}', '_blank')")
+  return(link)
 }
 
 # recipe picture address
@@ -66,6 +67,46 @@ output_match_link <- function(name, w){
   }
 }
 
+# or match algorithm
+or_match <- function(chosen_options, meal_recipes){
+  matches <- map2_df(names(chosen_options), chosen_options, function(name, options){
+    
+    if( length(options) == 0 ) return(data.frame(recipe = character(0)))
+    
+    type_match <- map(options, ~ subset(meal_recipes, type == name & str_detect(ingredients, .x))) %>% 
+      bind_rows()
+    any <- subset(meal_recipes, type == name & ingredients == "any")
+    sub_matches <- bind_rows(any, type_match) %>% dplyr::select(recipe)
+    
+    return(sub_matches)
+  }) %>% distinct() %>% arrange(recipe) %>% pull(recipe)
+  
+  return(matches)
+}
+
+# or match algorithm
+and_match <- function(chosen_options, meal_recipes){
+  matches <- map2(names(chosen_options), chosen_options, function(name, options){
+    
+    if( length(options) == 0 ) return(data.frame(recipe = character(0)))
+    
+    type_match <- map(options, ~ subset(meal_recipes, type == name & str_detect(ingredients, .x))) %>%
+      reduce(~ merge(.x, .y, 'recipe'))
+    any <- subset(meal_recipes, type == name & ingredients == "any")
+    sub_matches <- dplyr::bind_rows(type_match, any) %>% dplyr::select(recipe) %>% distinct()
+    
+    return(sub_matches)
+  }) %>% discard(~ nrow(.x) == 0) 
+  
+  if( length(matches) == 0 ){
+    matches <- character(0)
+  } else{
+    matches <- reduce(matches, ~ merge(.x, .y, 'recipe'))$recipe
+  }
+  
+  return(matches)
+}
+
 
 #-------------------------------------------------
 
@@ -77,7 +118,7 @@ shinyServer(function(input, output) {
   # RECIPE FINDER #
   #################
 
-  # function to format the box per each food group with an 'all' function
+  # function to format the box per each food group (color) with an 'all' function
   food_box <- function(type, option){
 
     # whether to check all: no if all button not available or not previously checked
@@ -138,38 +179,13 @@ shinyServer(function(input, output) {
 
     # finds matching dish for chosen options types and all 'any' dishes
     if(match_algorithm == 'or'){
-
-      #' matching ingredients based on or
-      matches <- map2_df(names(chosen_options), chosen_options, function(name, options){
-        if( length(options) == 0 ) return(data.frame(recipe = character(0)))
-
-        type_match <- subset(ingredients, type == name & str_detect(ingredients, options))
-        any <- subset(ingredients, type == name & ingredients == "any")
-        bind_rows(any, type_match) %>% dplyr::select(recipe)
-      }) %>% distinct() %>% arrange(recipe) %>% pull(recipe)
-
+      matches <- or_match(chosen_options, meal_recipes)
     } else if (match_algorithm == 'and'){
-
-      # matching ingredients based on and
-      matches <- map2(names(chosen_options), chosen_options, function(name, options){
-        if( length(options) == 0 ) return(data.frame(recipe = character(0)))
-
-        type_match <- map(options, ~ subset(ingredients, type == name & str_detect(ingredients, .x))) %>%
-          reduce(~ merge(.x, .y, 'recipe'))
-        any <- subset(ingredients, type == name & ingredients == "any")
-        dplyr::bind_rows(type_match, any) %>% dplyr::select(recipe) %>% distinct()
-      }) %>% discard(~ nrow(.x) == 0) 
-      
-      if( length(matches) == 0 ){
-        matches <- character(0)
-      } else{
-        matches <- reduce(matches, ~ merge(.x, .y, 'recipe'))$recipe
-      }
+      matches <- and_match(chosen_options, meal_recipes)
     }
 
     return(matches)
   })
-
 
   # creating output objects - create links to recipe site
   # loop over recipes and assign output objects within there
@@ -214,11 +230,8 @@ shinyServer(function(input, output) {
   # create the action when click on the randomizer
   output$randomize <- renderUI({
 
-    # makes address
-    address <- make_address(random_dish$dish)
-
     # generates link cmd
-    link_cmd <- paste0("window.open('", address, "', '_blank')")
+    link_cmd <- make_link(random_dish$dish)
 
     # makes the action button to open in new page
     actionButton("random", "I'm Feeling Lucky", onclick = link_cmd)
@@ -242,11 +255,8 @@ shinyServer(function(input, output) {
   # create the action when click on the randomizer
   output$randomize_dessert <- renderUI({
 
-    # makes address
-    address <- make_address(random_dessert$dish)
-
     # generates link cmd
-    link_cmd <- paste0("window.open('", address, "', '_blank')")
+    link_cmd <- make_link(random_dessert$dish)
 
     # makes the action button to open in new page
     actionButton("random_dessert", "I'm Feeling Lucky", onclick = link_cmd)

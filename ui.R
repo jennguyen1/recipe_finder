@@ -13,10 +13,14 @@ dashboardPage(skin = "black",
   # app title
   dashboardHeader(title = "Recipe Finder"),
 
-  # disable sidebar
+  # sidebar
   dashboardSidebar(
     collapsed = TRUE, 
-    radioButtons("match_algorithm", "Choosen your matching algorithm", c('or', 'and'))
+    sidebarMenu(
+      radioButtons("match_algorithm", "Choosen your matching algorithm", c('or', 'and')),
+      menuItem("Recipes", href = "http://jennguyen1.github.io/nhuyhoa/recipes/", icon = icon("book")), 
+      menuItem("Github Source Code", href = "https://github.com/jennguyen1/recipe_finder", icon = icon("github"))
+    )
   ),
 
   # app main body
@@ -56,7 +60,8 @@ dashboardPage(skin = "black",
         )
 
       )
-    )
+    ),
+    span(p("Copyright (c) 2018 Jennifer N Nguyen under the MIT License"), style = "font-size:12px; color:grey")
   )
 )
 
