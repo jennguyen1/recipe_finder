@@ -32,7 +32,7 @@ dessert_names <- unique(dessert_recipes$recipe)
 clean <- function(food_type) ingredients %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
 
 # obtain food options
-meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha") %>% unique() %>% sort()
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha", "duck") %>% unique() %>% sort()
 veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
 
@@ -128,7 +128,7 @@ shinyServer(function(input, output) {
   # process chosen options from user - generate a list of matches
   match_list <- reactive({
 
-    match_algorithm <- 'or' # TODO make an option for this
+    match_algorithm <- input$match_algorithm
 
     chosen_options <- list(
       meat = input$choose_meat,
@@ -148,7 +148,7 @@ shinyServer(function(input, output) {
         bind_rows(any, type_match) %>% dplyr::select(recipe)
       }) %>% distinct() %>% arrange(recipe) %>% pull(recipe)
 
-    } else{
+    } else if (match_algorithm == 'and'){
 
       # matching ingredients based on and
       matches <- map2(names(chosen_options), chosen_options, function(name, options){
@@ -157,9 +157,13 @@ shinyServer(function(input, output) {
         type_match <- map(options, ~ subset(ingredients, type == name & ingredients == .x)) %>%
           reduce(~ merge(.x, .y, 'recipe'))
         any <- subset(ingredients, type == name & ingredients == "any")
-        merge(any, type_match, 'recipe') %>% dplyr::select(recipe)
-      }) %>% discard(~ nrow(.x) == 0) %>% reduce(~ merge(.x, .y, 'recipe')) %>% pull(recipe)
-
+        dplyr::bind_rows(type_match, any) %>% dplyr::select(recipe) %>% distinct()
+      }) %>% discard(~ nrow(.x) == 0) 
+      if( length(matches) == 0 ){
+        matches <- character(0)
+      } else{
+        matches <- reduce(matches, ~ merge(.x, .y, 'recipe'))$recipe
+      }
     }
 
     return(matches)

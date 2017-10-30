@@ -14,7 +14,10 @@ dashboardPage(skin = "black",
   dashboardHeader(title = "Recipe Finder"),
 
   # disable sidebar
-  dashboardSidebar(disable = TRUE),
+  dashboardSidebar(
+    collapsed = TRUE, 
+    radioButtons("match_algorithm", "Choosen your matching algorithm", c('or', 'and'))
+  ),
 
   # app main body
   dashboardBody(

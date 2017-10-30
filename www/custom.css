@@ -5,21 +5,35 @@
 
 /* make the entire header black */
 .skin-black .main-header .logo, .skin-black .main-header .logo:hover {
-
-  width: 100%;
-  text-align: left;
-  margin-bottom: 10px;
-
-  font-weight: bold;
   color: white;
-  background-color: black;
+  font-weight: bold;
+  background-color: rgb(50,50,50);
   border-right: transparent;
-  display: block;
 }
 
-/* remove navbar */
-.skin-black .main-header .navbar{
-  display: none;
+/* color of navbar & toggle options*/
+.skin-black .main-header .navbar {
+    background-color: rgb(85,85,85);
+}
+
+.skin-black .main-header .navbar .sidebar-toggle:hover {
+    color: white;
+    text-decoration: none;
+    background: rgb(50,50,50);
+    border-right: rgb(50,50,50);
+}
+
+.main-header .sidebar-toggle:before {
+    color: white;
+}
+
+.skin-black .main-header .navbar>.sidebar-toggle {
+  border-right: rgb(85,85,85);
+}
+
+/* sidebar color */
+.skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
+    background-color: black;
 }
 
 /* change recipe links to white font */
