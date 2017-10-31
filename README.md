@@ -8,7 +8,7 @@
 
 Don't let your food waste away in the refrigerator! Use the [Recipe Finder](https://jennynguyen.shinyapps.io/recipe_finder/) to search for delicious recipes!
 
-The [Recipe Finder](https://jennynguyen.shinyapps.io/recipe_finder/) is an R Shiny application that searches through both meal and dessert recipes available on [NhuyHoa's recipes](http://jennguyen1.github.io/nhuyhoa/recipes/) for requested ingredients. All recipe information is stored on SQLite database `data/recipes.db`, which both the website and the application pulls from. 
+The [Recipe Finder](https://jennynguyen.shinyapps.io/recipe_finder/) is an R Shiny application that searches through both meal and dessert recipes available on [NhuyHoa's recipes](http://jennguyen1.github.io/nhuyhoa/recipes/) for selected ingredients. All recipe information is stored on SQLite database `data/recipes.db`, which both the website and the application pulls from. 
 
 ![screenshot of display 1](images/app_screenshot1.jpg)
 
