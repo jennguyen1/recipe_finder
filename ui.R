@@ -26,10 +26,9 @@ dashboardPage(skin = "black",
   # app main body
   dashboardBody(
     # CSS
-    tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.css"),
-      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
-    ),
+    tags$head(includeScript("www/google-analytics.js")),
+    includeCSS("www/bootstrap.css"), 
+    includeCSS("www/custom.css"),
 
     # app
     verticalLayout(
