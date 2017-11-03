@@ -43,7 +43,7 @@ fruit_options <- clean("fruit")
 # recipe address
 make_address <- function(name){
   address <- str_replace_all(name, " ", "-") %>%
-    paste0("http://jennguyen1.github.io/nhuyhoa/2017/05/Recipe-", ., ".html")
+    paste0("http://jennguyen1.github.io/nhuyhoa/recipes/", ., ".html")
   return(address)
 }
 
