@@ -8,6 +8,7 @@ library(stringr)
 library(dplyr)
 library(purrr)
 library(RSQLite)
+library(RCurl)
 
 #-------------------------------------------------
 
@@ -51,7 +52,8 @@ make_address <- function(name){
 make_pic_address <- function(name){
   fixed_name <- str_replace(name, "\\s+\\(.*", "") %>% str_replace_all(" ", "_")
   address <- paste0("http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/", fixed_name, ".JPG")
-  return(address)
+  url <- ifelse(RCurl::url.exists(address), address, "http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/nophoto.JPG")
+  return(url)
 }
 
 # output match link for list
