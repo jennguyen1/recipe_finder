@@ -60,9 +60,10 @@ make_pic_address <- function(name){
 output_match_link <- function(name, w){
   # if the match exists - export a picture & link of recipe
   if(!is.na(name)){
+    display_name <- str_replace(name, " \\(.*", "")
     column(width = w,
            a(href = make_address(name), img(src = make_pic_address(name), width = 200, height = 150), target = "_blank"),
-           h5(a(href = make_address(name), name, target = "_blank")),
+           h5(a(href = make_address(name), display_name, target = "_blank")),
            br()
     )
   }
