@@ -2,7 +2,7 @@
 
 ## Check it Out!
 
-[Run the app](https://jennynguyen.shinyapps.io/recipe_finder/)
+<https://jennynguyen.shinyapps.io/recipe_finder/>
 
 ## Quick Summary
 
