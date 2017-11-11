@@ -8,6 +8,7 @@ library(shinydashboard)
 library(magrittr)
 
 # UI functions
+function(request){
 dashboardPage(skin = "black",
 
   # app title
@@ -45,7 +46,8 @@ dashboardPage(skin = "black",
                      uiOutput("randomize"),
                      br(),
                      uiOutput("recipe_options")
-                 )
+                 ), 
+                 bookmarkButton()
         ),
 
         # dessert options
@@ -62,5 +64,5 @@ dashboardPage(skin = "black",
     ),
     span(p("Copyright (c) 2018 Jennifer N Nguyen under the MIT License"), style = "font-size:12px; color:grey")
   )
-)
+)}
 

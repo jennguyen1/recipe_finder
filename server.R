@@ -11,8 +11,8 @@ library(RSQLite)
 library(RCurl)
 
 #-------------------------------------------------
+# LOAD RECIPES -----------------------------------
 
-# load recipes
 connect <- RSQLite::dbConnect(drv = RSQLite::SQLite(), dbname = "data/recipes.db")
 recipes <- RSQLite::dbGetQuery(conn = connect, statement = "SELECT * FROM recipes")
 ingredients <- RSQLite::dbGetQuery(conn = connect, statement = "SELECT * FROM ingredients")
@@ -26,6 +26,7 @@ meal_recipes <- subset(recipe_info, meal_type != "other")
 recipe_names <- unique(meal_recipes$recipe)
 dessert_names <- unique(dessert_recipes$recipe)
 
+
 #-------------------------------------------------
 # FUNCTIONS FOR UI INPUTS ------------------------
 
@@ -36,6 +37,28 @@ clean <- function(food_type) meal_recipes %>% subset(type == food_type) %>% pull
 meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha", "duck") %>% unique() %>% sort()
 veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
+
+# function to format the box per each food group (color) 
+food_box <- function(type, option){
+  
+  status <- switch(type,
+                   meat = "danger",
+                   veggie = "success",
+                   fruit = "warning")
+  
+  bg <- switch(type,
+               meat = "red",
+               veggie = "green",
+               fruit = "yellow")
+  
+  # make box
+  column(width = 4,
+         box(title = paste("Choose", str_to_title(type)), width = NULL, collapsible = TRUE,
+             solidHeader = TRUE, status = status, class = bg,
+             actionButton(stringr::str_interp("all_${type}"), "Select All", icon = icon("check")),
+             checkboxGroupInput(stringr::str_interp("choose_${type}"), "", option))
+  )
+}
 
 
 #-------------------------------------------------
@@ -120,69 +143,93 @@ and_match <- function(chosen_options, meal_recipes){
 #-------------------------------------------------
 
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
 
 
   #################
   # RECIPE FINDER #
   #################
 
-  # function to format the box per each food group (color) with an 'all' function
-  food_box <- function(type, option){
+  # storing chosen options
+  # chosen_options <- reactiveValues(
+  #   meat = character(0),
+  #   veggie = character(0),
+  #   fruit = character(0)
+  # )
+  # observeEvent({
+  #   input$choose_meat
+  #   input$choose_veggie
+  #   input$choose_fruit
+  # }, {
+  #   chosen_options$meat <- input$choose_meat
+  #   chosen_options$veggie <- input$choose_veggie
+  #   chosen_options$fruit <- input$choose_fruit
+  # })
 
-    # whether to check all: no if all button not available or not previously checked
-    t <- paste0("all_", type)
-    if( is.null(input[[t]]) ){
-      check_all <- FALSE
-    } else if( !input[[t]] ){
-      check_all <- FALSE
-    } else{
-      check_all <- TRUE
-    }
+  # chosen_match_alg <- reactiveValues(x = 'or')
+  # reactive({
+  #   chosen_match_alg <- input$match_algorithm
+  # })
 
-    # whether to select all group input buttons based on check all
-    if(check_all){
-      selected <- option
-    } else{
-      selected <- NULL
-    }
-
-    status <- switch(type,
-                     meat = "danger",
-                     veggies = "success",
-                     fruit = "warning")
-
-    bg <- switch(type,
-                 meat = "red",
-                 veggies = "green",
-                 fruit = "yellow")
-
-    # make box
-    column(width = 4,
-           box(title = paste("Choose", str_to_title(type)), width = NULL, collapsible = TRUE,
-               solidHeader = TRUE, status = status, class = bg,
-               checkboxInput(t, "all", check_all),
-               checkboxGroupInput(paste0("choose_", type), "", option, selected))
-    )
-  }
-
-  # UI Inputs rendering
+  # store/load values for bookmarking
+  # onBookmark(function(state) {
+  #   state$values$meat <- chosen_options$meat
+  #   state$values$veggie <- chosen_options$veggie
+  #   state$values$fruit <- chosen_options$fruit
+  # })
+  # onRestore(function(state) {
+  #   chosen_options$meat <- state$values$meat
+  #   chosen_options$veggie <- state$values$veggie
+  #   chosen_options$fruit <- state$values$fruit
+  # })
+  # 
+  setBookmarkExclude(c("all_meat", "all_veggie", "all_fruit", "random", "sidebarCollapsed", "sidebarItemExpanded"))
+  
+  # ui for ingredients, all button
   output$input_selection_options <- renderUI({
     fixedRow(
       food_box("meat", meat_options),
-      food_box("veggies", veggie_options),
+      food_box("veggie", veggie_options),
       food_box("fruit", fruit_options)
     )
   })
+  observeEvent(input$all_meat, {
+    if(input$all_meat == 0) return(NULL)
+    else if(input$all_meat %% 2 == 1){
+      updateCheckboxGroupInput(session, "choose_meat", choices = meat_options, selected = meat_options)
+    } else{
+      updateCheckboxGroupInput(session, "choose_meat", choices = meat_options)
+    }
+  })
+  observeEvent(input$all_veggie, {
+    if(input$all_veggie == 0) return(NULL)
+    else if(input$all_veggie %% 2 == 1){
+      updateCheckboxGroupInput(session, "choose_veggie", choices = veggie_options, selected = veggie_options)
+    } else{
+      updateCheckboxGroupInput(session, "choose_veggie", choices = veggie_options)
+    }
+  })
+  observeEvent(input$all_fruit, {
+    if(input$all_fruit == 0) return(NULL)
+    else if(input$all_fruit %% 2 == 1){
+      updateCheckboxGroupInput(session, "choose_fruit", choices = fruit_options, selected = fruit_options)
+    } else{
+      updateCheckboxGroupInput(session, "choose_fruit", choices = fruit_options)
+    }
+  })
+
+  
+  #################
+  # MATCH CHOICES #
+  #################
 
   # process chosen options from user - generate a list of matches
   match_list <- reactive({
 
     match_algorithm <- input$match_algorithm
-
     chosen_options <- list(
       meat = input$choose_meat,
-      veggie = input$choose_veggies,
+      veggie = input$choose_veggie,
       fruit = input$choose_fruit
     )
 
@@ -192,7 +239,7 @@ shinyServer(function(input, output) {
     } else if (match_algorithm == 'and'){
       matches <- and_match(chosen_options, meal_recipes)
     }
-
+    
     return(matches)
   })
 
