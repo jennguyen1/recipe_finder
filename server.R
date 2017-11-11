@@ -150,39 +150,6 @@ shinyServer(function(input, output, session) {
   # RECIPE FINDER #
   #################
 
-  # storing chosen options
-  # chosen_options <- reactiveValues(
-  #   meat = character(0),
-  #   veggie = character(0),
-  #   fruit = character(0)
-  # )
-  # observeEvent({
-  #   input$choose_meat
-  #   input$choose_veggie
-  #   input$choose_fruit
-  # }, {
-  #   chosen_options$meat <- input$choose_meat
-  #   chosen_options$veggie <- input$choose_veggie
-  #   chosen_options$fruit <- input$choose_fruit
-  # })
-
-  # chosen_match_alg <- reactiveValues(x = 'or')
-  # reactive({
-  #   chosen_match_alg <- input$match_algorithm
-  # })
-
-  # store/load values for bookmarking
-  # onBookmark(function(state) {
-  #   state$values$meat <- chosen_options$meat
-  #   state$values$veggie <- chosen_options$veggie
-  #   state$values$fruit <- chosen_options$fruit
-  # })
-  # onRestore(function(state) {
-  #   chosen_options$meat <- state$values$meat
-  #   chosen_options$veggie <- state$values$veggie
-  #   chosen_options$fruit <- state$values$fruit
-  # })
-  # 
   setBookmarkExclude(c("all_meat", "all_veggie", "all_fruit", "random", "sidebarCollapsed", "sidebarItemExpanded"))
   
   # ui for ingredients, all button
