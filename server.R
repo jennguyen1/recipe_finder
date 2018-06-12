@@ -34,7 +34,7 @@ dessert_names <- unique(dessert_recipes$recipe)
 clean <- function(food_type) meal_recipes %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
 
 # obtain food options
-meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha", "duck", "squid") %>% unique() %>% sort()
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha", "duck", "squid", "pate") %>% unique() %>% sort()
 veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
 
