@@ -8,7 +8,7 @@ library(stringr)
 library(dplyr)
 library(purrr)
 library(RSQLite)
-library(RCurl)
+library(httr)
 
 #-------------------------------------------------
 # LOAD RECIPES -----------------------------------
@@ -34,7 +34,9 @@ dessert_names <- unique(dessert_recipes$recipe)
 clean <- function(food_type) meal_recipes %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
 
 # obtain food options
-meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "fish", "eggs", "tofu", "lobster", "cha", "duck", "squid", "pate", "salmon") %>% unique() %>% sort()
+meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "eel",
+                  "fish", "eggs", "tofu", "lobster", "cha", "duck", 
+                  "squid", "pate") %>% unique() %>% sort()
 veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
 
@@ -75,7 +77,7 @@ make_address <- function(name){
 make_pic_address <- function(name){
   fixed_name <- str_replace(name, "\\s+\\(.*", "") %>% str_replace_all(" ", "_")
   address <- paste0("http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/", fixed_name, ".JPG")
-  url <- ifelse(RCurl::url.exists(address), address, "http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/nophoto.JPG")
+  url <- ifelse(httr::GET(address)$status_code != 404, address, "http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/nophoto.JPG")
   return(url)
 }
 
