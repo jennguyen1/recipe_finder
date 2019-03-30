@@ -35,24 +35,24 @@ clean <- function(food_type) meal_recipes %>% subset(type == food_type) %>% pull
 
 # obtain food options
 meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "eel",
-                  "fish", "eggs", "tofu", "lobster", "cha", "duck", 
-                  "squid", "pate") %>% unique() %>% sort()
+                  "fish", "eggs", "tofu", "lobster", "cha", "duck",
+                  "squid", "pate", "mushroom") %>% unique() %>% sort()
 veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
 
-# function to format the box per each food group (color) 
+# function to format the box per each food group (color)
 food_box <- function(type, option){
-  
+
   status <- switch(type,
                    meat = "danger",
                    veggie = "success",
                    fruit = "warning")
-  
+
   bg <- switch(type,
                meat = "red",
                veggie = "green",
                fruit = "yellow")
-  
+
   # make box
   column(width = 4,
          box(title = paste("Choose", str_to_title(type)), width = NULL, collapsible = TRUE,
@@ -104,40 +104,40 @@ make_link <- function(name){
 # or match algorithm
 or_match <- function(chosen_options, meal_recipes){
   matches <- map2_df(names(chosen_options), chosen_options, function(name, options){
-    
+
     if( length(options) == 0 ) return(data.frame(recipe = character(0)))
-    
-    type_match <- map(options, ~ subset(meal_recipes, type == name & str_detect(ingredients, .x))) %>% 
+
+    type_match <- map(options, ~ subset(meal_recipes, type == name & str_detect(ingredients, .x))) %>%
       bind_rows()
     any <- subset(meal_recipes, type == name & ingredients == "any")
     sub_matches <- bind_rows(any, type_match) %>% dplyr::select(recipe)
-    
+
     return(sub_matches)
   }) %>% distinct() %>% arrange(recipe) %>% pull(recipe)
-  
+
   return(matches)
 }
 
 # or match algorithm
 and_match <- function(chosen_options, meal_recipes){
   matches <- map2(names(chosen_options), chosen_options, function(name, options){
-    
+
     if( length(options) == 0 ) return(data.frame(recipe = character(0)))
-    
+
     type_match <- map(options, ~ subset(meal_recipes, type == name & str_detect(ingredients, .x))) %>%
       reduce(~ merge(.x, .y, 'recipe'))
     any <- subset(meal_recipes, type == name & ingredients == "any")
     sub_matches <- dplyr::bind_rows(type_match, any) %>% dplyr::select(recipe) %>% distinct()
-    
+
     return(sub_matches)
-  }) %>% discard(~ nrow(.x) == 0) 
-  
+  }) %>% discard(~ nrow(.x) == 0)
+
   if( length(matches) == 0 ){
     matches <- character(0)
   } else{
     matches <- reduce(matches, ~ merge(.x, .y, 'recipe'))$recipe
   }
-  
+
   return(matches)
 }
 
@@ -153,7 +153,7 @@ shinyServer(function(input, output, session) {
   #################
 
   setBookmarkExclude(c("all_meat", "all_veggie", "all_fruit", "random", "sidebarCollapsed", "sidebarItemExpanded"))
-  
+
   # ui for ingredients, all button
   output$input_selection_options <- renderUI({
     fixedRow(
@@ -187,7 +187,7 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  
+
   #################
   # MATCH CHOICES #
   #################
@@ -208,7 +208,7 @@ shinyServer(function(input, output, session) {
     } else if (match_algorithm == 'and'){
       matches <- and_match(chosen_options, meal_recipes)
     }
-    
+
     return(matches)
   })
 
