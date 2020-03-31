@@ -68,15 +68,24 @@ food_box <- function(type, option){
 
 # recipe address
 make_address <- function(name){
-  address <- str_replace_all(name, " ", "-") %>%
-    paste0("http://jennguyen1.github.io/nhuyhoa/recipes/", ., ".html")
+  address <- name %>%
+    stringr::str_replace_all(" ", "-") %>%
+    stringr::str_remove("-[(].*$") %>%
+    stringr::str_to_lower() %>%
+    paste0("https://nhuyhoa-recipes.netlify.com/", ., ".html")
   return(address)
 }
 
 # recipe picture address
 make_pic_address <- function(name){
-  fixed_name <- str_replace(name, "\\s+\\(.*", "") %>% str_replace_all(" ", "_")
-  address <- paste0("http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/", fixed_name, ".JPG")
+  fixed_name <- name %>%
+    stringr::str_replace_all(" ", "_") %>%
+    stringr::str_remove("_[(].*$")
+  address <- name %>%
+    stringr::str_replace_all(" ", "-") %>%
+    stringr::str_remove("-[(].*$") %>%
+    stringr::str_to_lower() %>%
+    paste0("https://nhuyhoa-recipes.netlify.com/", ., "/", fixed_name, ".JPG")
   url <- ifelse(httr::GET(address)$status_code != 404, address, "http://jennguyen1.github.io/nhuyhoa/figure/food/thumbnail/nophoto.JPG")
   return(url)
 }
