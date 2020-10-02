@@ -36,7 +36,7 @@ clean <- function(food_type) meal_recipes %>% subset(type == food_type) %>% pull
 # obtain food options
 meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "eel",
                   "fish", "eggs", "tofu", "lobster", "cha", "duck",
-                  "squid", "pate", "mushroom") %>% unique() %>% sort()
+                  "squid", "pate") %>% unique() %>% sort()
 veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
 
