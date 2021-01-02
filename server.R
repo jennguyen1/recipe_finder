@@ -55,7 +55,8 @@ food_box <- function(type, option){
 
   # make box
   column(width = 4,
-         box(title = paste("Choose", str_to_title(type)), width = NULL, collapsible = TRUE,
+         box(title = paste("Choose", str_to_title(type)), width = NULL,
+             collapsible = TRUE, collapsed = TRUE,
              solidHeader = TRUE, status = status, class = bg,
              actionButton(stringr::str_interp("all_${type}"), "Select All", icon = icon("check")),
              checkboxGroupInput(stringr::str_interp("choose_${type}"), "", option))
