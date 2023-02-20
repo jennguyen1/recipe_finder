@@ -19,7 +19,7 @@ dashboardPage(skin = "black",
     collapsed = TRUE, 
     sidebarMenu(
       radioButtons("match_algorithm", "Choosen your matching algorithm", c('or', 'and')),
-      menuItem("Recipes", href = "http://jennguyen1.github.io/nhuyhoa/recipes/", icon = icon("book")), 
+      menuItem("Recipes", href = "https://nhuyhoa-recipes.netlify.app/", icon = icon("book")), 
       menuItem("Github Source Code", href = "https://github.com/jennguyen1/recipe_finder", icon = icon("github"))
     )
   ),
