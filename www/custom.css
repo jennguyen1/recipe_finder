@@ -124,3 +124,7 @@
 .nav-tabs-custom > .nav-tabs > li.active{
   border-top-color: rgb(50,50,50);
 }
+
+body {
+  font-size: 16px;
+}

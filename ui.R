@@ -5,6 +5,7 @@
 
 library(shiny)
 library(shinydashboard)
+library(shinyWidgets)
 
 # UI functions
 function(request){

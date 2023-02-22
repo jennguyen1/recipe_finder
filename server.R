@@ -51,12 +51,15 @@ food_box <- function(type, option){
                fruit = "yellow")
 
   # make box
-  column(width = 4,
-         box(title = paste("Choose", str_to_title(type)), width = NULL,
-             collapsible = TRUE, collapsed = TRUE,
-             solidHeader = TRUE, status = status, class = bg,
-             actionButton(stringr::str_interp("all_${type}"), "Select All", icon = icon("check")),
-             checkboxGroupInput(stringr::str_interp("choose_${type}"), "", option))
+  column(
+    width = 4,
+    box(
+      title = paste("Choose", str_to_title(type)), width = NULL,
+      collapsible = TRUE, collapsed = TRUE,
+      solidHeader = TRUE, status = status, class = bg,
+      actionButton(stringr::str_interp("all_${type}"), "Select All", icon = icon("check")),
+      awesomeCheckboxGroup(inputId = stringr::str_interp("choose_${type}"),"", choices = option)
+    )
   )
 }
 
@@ -172,25 +175,25 @@ shinyServer(function(input, output, session) {
   observeEvent(input$all_meat, {
     if(input$all_meat == 0) return(NULL)
     else if(input$all_meat %% 2 == 1){
-      updateCheckboxGroupInput(session, "choose_meat", choices = meat_options, selected = meat_options)
+      updateAwesomeCheckboxGroup(session, "choose_meat", choices = meat_options, selected = meat_options)
     } else{
-      updateCheckboxGroupInput(session, "choose_meat", choices = meat_options)
+      updateAwesomeCheckboxGroup(session, "choose_meat", choices = meat_options)
     }
   })
   observeEvent(input$all_veggie, {
     if(input$all_veggie == 0) return(NULL)
     else if(input$all_veggie %% 2 == 1){
-      updateCheckboxGroupInput(session, "choose_veggie", choices = veggie_options, selected = veggie_options)
+      updateAwesomeCheckboxGroup(session, "choose_veggie", choices = veggie_options, selected = veggie_options)
     } else{
-      updateCheckboxGroupInput(session, "choose_veggie", choices = veggie_options)
+      updateAwesomeCheckboxGroup(session, "choose_veggie", choices = veggie_options)
     }
   })
   observeEvent(input$all_fruit, {
     if(input$all_fruit == 0) return(NULL)
     else if(input$all_fruit %% 2 == 1){
-      updateCheckboxGroupInput(session, "choose_fruit", choices = fruit_options, selected = fruit_options)
+      updateAwesomeCheckboxGroup(session, "choose_fruit", choices = fruit_options, selected = fruit_options)
     } else{
-      updateCheckboxGroupInput(session, "choose_fruit", choices = fruit_options)
+      updateAwesomeCheckboxGroup(session, "choose_fruit", choices = fruit_options)
     }
   })
 
