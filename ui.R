@@ -5,20 +5,27 @@
 
 library(shiny)
 library(shinydashboard)
-library(magrittr)
 
 # UI functions
 function(request){
 dashboardPage(skin = "black",
 
   # app title
-  dashboardHeader(title = "Recipe Finder"),
+  dashboardHeader(
+    title = "Recipe Finder",
+    dropdownMenu(
+      type = "notifications", 
+      icon = paste("Updated ", as.Date(file.info("data/recipes.db")$mtime)),
+      headerText = "",
+      badgeStatus = NULL
+    )
+  ),
 
   # sidebar
   dashboardSidebar(
     collapsed = TRUE, 
     sidebarMenu(
-      radioButtons("match_algorithm", "Choosen your matching algorithm", c('or', 'and')),
+      radioButtons("match_algorithm", "Choosen matching algorithm", c('or', 'and')),
       menuItem("Recipes", href = "https://nhuyhoa-recipes.netlify.app/", icon = icon("book")), 
       menuItem("Github Source Code", href = "https://github.com/jennguyen1/recipe_finder", icon = icon("github"))
     )
@@ -28,7 +35,7 @@ dashboardPage(skin = "black",
   dashboardBody(
     # CSS
     tags$head(includeScript("www/google-analytics.js")),
-    includeCSS("www/bootstrap.css"), 
+    # includeCSS("www/bootstrap.css"), 
     includeCSS("www/custom.css"),
 
     # app

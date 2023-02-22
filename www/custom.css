@@ -1,59 +1,59 @@
 /* Custom CSS ********
 ** Jennifer N Nguyen *
-** 08/27/2017        *
+** 02/21/2023        *
 *********************/
 
-/* make the entire header black */
+
+/* header logo */
 .skin-black .main-header .logo, .skin-black .main-header .logo:hover {
   color: white;
   font-weight: bold;
   background-color: rgb(50,50,50);
-  border-right: transparent;
+  border: transparent;
 }
 
-/* color of navbar & toggle options*/
+/* navbar */
 .skin-black .main-header .navbar {
     background-color: rgb(85,85,85);
 }
 
-.skin-black .main-header .navbar .sidebar-toggle:hover {
-    color: white;
-    text-decoration: none;
-    background: rgb(50,50,50);
-    border-right: rgb(50,50,50);
-}
-
-.main-header .sidebar-toggle:before {
-    color: white;
-}
-
-.skin-black .main-header .navbar>.sidebar-toggle {
-  border-right: rgb(85,85,85);
-}
-
-/* sidebar color */
+/* sidebar */
 .skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
     background-color: black;
 }
 
-/* change recipe links to white font */
-.match_recipe a, .match_recipe a:hover {
+/* sidebar toggle */
+.skin-black .main-header .navbar .sidebar-toggle {
+  color: white;
+  border-right: 0px;
+}
+.skin-black .main-header .navbar .sidebar-toggle:hover {
+  color: white !important;
+  background: rgb(50,50,50) !important;
+}
+
+/* notification info */
+.skin-black .main-header .navbar .nav > li > a {
   color: white;
 }
-
-/* change height of box for grid */
-.light-blue .col-sm-3 {
-  height: 220px;
-  min-width: 200px;
+.navbar-custom-menu > .navbar-nav {
+  pointer-events: none;
+}
+.navbar-custom-menu > .navbar-nav > li > .dropdown-menu {
+  display: none;
+}
+.skin-black .main-header .navbar .navbar-custom-menu .navbar-nav > li > a, .skin-black .main-header .navbar .navbar-right > li > a {
+  border-left: 0px;
 }
 
-.teal .col-sm-3 {
-  height: 220px;
-  min-width: 200px;
-}
 
-.match_recipe {
-  margin: 5px;
+
+/* Food Boxes ****
+******************/
+
+/* bold food box titles */
+.box-title {
+  font-weight: bold;
 }
 
 /* make food boxes background transparent */
@@ -69,40 +69,58 @@
   background-color: rgba(221, 75, 57, .7);
   color: white;
 }
+
 .light-blue {
   background-color: rgba(69, 130, 236, .7);
   color: white;
 }
-.teal {
-  background-color: rgba(57, 204, 204, .7);
+.box.box-solid.box-primary >.box-header {
+  background: #4582ec;
 }
-
-/* change main color of primary boxes */
-.box.box-solid.box-primary>.box-header {
-  color:#fff;
-  background:#4582ec
-                    }
-
 .box.box-solid.box-primary{
   border-color: #4582ec;
 }
 
-/* change main color of info boxes */
+.teal {
+  background-color: rgba(57, 204, 204, .7);
+}
 .box.box-solid.box-info>.box-header {
-  color:#fff;
   background:rgb(57, 204, 204)
 }
-
 .box.box-solid.box-info{
   border-color: rgb(57, 204, 204);
 }
 
-/* navigation tabs */
-.nav-tabs-custom>.nav-tabs {
-  font-size: 18px;
+/* change height of box for grid */
+.light-blue .col-sm-3 {
+  height: 220px;
+  min-width: 200px;
+}
+.teal .col-sm-3 {
+  height: 220px;
+  min-width: 200px;
 }
 
-.nav-tabs-custom>.nav-tabs .active a {
+/* recipe links to white font */
+.match_recipe {
+  margin: 5px;
+}
+.match_recipe a {
+  color: white;
+  font-size: 16px;
   font-weight: bold;
 }
+.match_recipe a:hover {
+  text-decoration: underline;
+}
 
+/* navigation tabs */
+.nav-tabs-custom >.nav-tabs {
+  font-size: 18px;
+}
+.nav-tabs-custom >.nav-tabs .active a {
+  font-weight: bold;
+}
+.nav-tabs-custom > .nav-tabs > li.active{
+  border-top-color: rgb(50,50,50);
+}
