@@ -73,7 +73,7 @@ make_address <- function(name){
     stringr::str_replace_all(" ", "-") %>%
     stringr::str_remove("-[(].*$") %>%
     stringr::str_to_lower() %>%
-    paste0("https://nhuyhoa-recipes.netlify.com/", ., ".html")
+    paste0("https://nhuyhoa-recipes.netlify.app/", ., ".html")
   return(address)
 }
 
