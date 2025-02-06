@@ -86,7 +86,7 @@ make_pic_address <- function(name){
     stringr::str_replace_all(" ", "-") %>%
     stringr::str_remove("-[(].*$") %>%
     stringr::str_to_lower() %>%
-    paste0("https://nhuyhoa-recipes.netlify.com/", ., "/", fixed_name, ".JPG")
+    paste0("https://nhuyhoa-recipes.netlify.app/", ., "/", fixed_name, ".JPG")
   url <- ifelse(httr::GET(address)$status_code != 404, address, "https://nhuyhoa-recipes.netlify.app/nophoto.JPG")
   return(url)
 }
