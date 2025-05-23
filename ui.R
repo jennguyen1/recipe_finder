@@ -12,15 +12,7 @@ function(request){
 dashboardPage(skin = "black",
 
   # app title
-  dashboardHeader(
-    title = "Recipe Finder",
-    dropdownMenu(
-      type = "notifications", 
-      icon = paste("Updated ", as.Date(file.info("data/recipes.db")$mtime)),
-      headerText = "",
-      badgeStatus = NULL
-    )
-  ),
+  dashboardHeader(title = "Recipe Finder"),
 
   # sidebar
   dashboardSidebar(

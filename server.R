@@ -4,16 +4,16 @@
 # Email: jennifernguyen1992@gmail.com
 
 library(tidyverse)
-library(RSQLite)
+library(DBI)
+library(duckdb)
 library(httr)
 
 #-------------------------------------------------
 # LOAD RECIPES -----------------------------------
 
-connect <- RSQLite::dbConnect(drv = RSQLite::SQLite(), dbname = "data/recipes.db")
-recipes <- RSQLite::dbGetQuery(conn = connect, statement = "SELECT * FROM recipes")
-ingredients <- RSQLite::dbGetQuery(conn = connect, statement = "SELECT * FROM ingredients")
-RSQLite::dbDisconnect(conn = connect)
+source("www/util.R")
+recipes <- query_db("SELECT * FROM recipes", "md:recipes")
+ingredients <- query_db("SELECT * FROM ingredients", "md:recipes")
 
 recipe_info <- merge(recipes, ingredients, by = "recipe")
 
@@ -28,7 +28,7 @@ dessert_names <- unique(dessert_recipes$recipe)
 # FUNCTIONS FOR UI INPUTS ------------------------
 
 # function to clean up food ingredients
-clean <- function(food_type) meal_recipes %>% subset(type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
+clean <- function(food_type) meal_recipes %>% subset(i_type == food_type) %>% pull(ingredients) %>% sort() %>% unique() %>% discard(~ .x %in% c("any"))
 
 # obtain food options
 meat_options <- c("pork", "chicken", "beef", "crab", "shrimp", "eel",
@@ -38,14 +38,14 @@ veggie_options <- clean("veggie")
 fruit_options <- clean("fruit")
 
 # function to format the box per each food group (color)
-food_box <- function(type, option){
+food_box <- function(i_type, option){
 
-  status <- switch(type,
+  status <- switch(i_type,
                    meat = "danger",
                    veggie = "success",
                    fruit = "warning")
 
-  bg <- switch(type,
+  bg <- switch(i_type,
                meat = "red",
                veggie = "green",
                fruit = "yellow")
@@ -54,11 +54,11 @@ food_box <- function(type, option){
   column(
     width = 4,
     box(
-      title = paste("Choose", str_to_title(type)), width = NULL,
+      title = paste("Choose", str_to_title(i_type)), width = NULL,
       collapsible = TRUE, collapsed = TRUE,
       solidHeader = TRUE, status = status, class = bg,
-      actionButton(stringr::str_interp("all_${type}"), "Select All", icon = icon("check")),
-      awesomeCheckboxGroup(inputId = stringr::str_interp("choose_${type}"),"", choices = option)
+      actionButton(stringr::str_interp("all_${i_type}"), "Select All", icon = icon("check")),
+      awesomeCheckboxGroup(inputId = stringr::str_interp("choose_${i_type}"),"", choices = option)
     )
   )
 }
@@ -117,9 +117,9 @@ or_match <- function(chosen_options, meal_recipes){
 
     if( length(options) == 0 ) return(data.frame(recipe = character(0)))
 
-    type_match <- map(options, ~ subset(meal_recipes, type == name & str_detect(ingredients, .x))) %>%
+    type_match <- map(options, ~ subset(meal_recipes, i_type == name & str_detect(ingredients, .x))) %>%
       bind_rows()
-    any <- subset(meal_recipes, type == name & ingredients == "any")
+    any <- subset(meal_recipes, i_type == name & ingredients == "any")
     sub_matches <- bind_rows(any, type_match) %>% dplyr::select(recipe)
 
     return(sub_matches)
@@ -134,9 +134,9 @@ and_match <- function(chosen_options, meal_recipes){
 
     if( length(options) == 0 ) return(data.frame(recipe = character(0)))
 
-    type_match <- map(options, ~ subset(meal_recipes, type == name & str_detect(ingredients, .x))) %>%
+    type_match <- map(options, ~ subset(meal_recipes, i_type == name & str_detect(ingredients, .x))) %>%
       reduce(~ merge(.x, .y, 'recipe'))
-    any <- subset(meal_recipes, type == name & ingredients == "any")
+    any <- subset(meal_recipes, i_type == name & ingredients == "any")
     sub_matches <- dplyr::bind_rows(type_match, any) %>% dplyr::select(recipe) %>% distinct()
 
     return(sub_matches)
