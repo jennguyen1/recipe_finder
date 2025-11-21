@@ -8,7 +8,7 @@
 
 Don't let your food waste away in the refrigerator! Use the [Recipe Finder](https://jennynguyen.shinyapps.io/recipe_finder/) to search for delicious Vietnamese recipes!
 
-The [Recipe Finder](https://jennynguyen.shinyapps.io/recipe_finder/) is an R Shiny application that searches through recipes available on [NhuyHoa's Recipes](https://nhuyhoa-recipes.netlify.app/post/) for selected ingredients. All recipe information is stored on SQLite database `data/recipes.db`, which both the website and the application pulls from. 
+The [Recipe Finder](https://jennynguyen.shinyapps.io/recipe_finder/) is an R Shiny application that searches through recipes available on [NhuyHoa's Recipes](https://nhuyhoa-recipes.netlify.app/post/) for selected ingredients. All recipe information is stored on cloud database, which both the website and the application pulls from. 
 
 ![screenshot of display 1](images/app_screenshot1.jpg)
 
